@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-eco-dark: #070709;
+  --color-eco-surface: #0e0e12;
+  --color-eco-blue: #92bbf8;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-eco-dark);
+}
+
+body {
+  background-color: var(--color-eco-dark);
+  color: #f4f4f5;
+  margin: 0;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  overflow-x: hidden;
+}
+
+/* Latar Belakang Kertas Milimeter / Blueprint Teknik */
+.bg-blueprint-grid {
+  background-size: 48px 48px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
