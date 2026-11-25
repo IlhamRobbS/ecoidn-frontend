@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { motion } from 'framer-motion';
-import { 
-  ArrowUpRight, Cpu, Droplets, Flame, Scale, ShieldCheck, 
-  Recycle, Terminal, CheckCircle2, Clock, Mail, Share2 
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowUpRight, Cpu, Droplets, Flame, Scale, ShieldCheck,
+  Terminal, CheckCircle2, Clock, Mail, Share2, Users, Wind, MapPin
 } from 'lucide-react';
 
 const CornerPlus = ({ className = "" }) => (
@@ -14,10 +14,11 @@ const CornerPlus = ({ className = "" }) => (
 
 const Home = () => {
   const { t } = useLanguage();
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
 
   const [liveDetections, setLiveDetections] = useState([
-    { id: 'BOT-104', label: 'HDPE NATURAL', conf: 0.989, x: 14, y: 24, w: 130, h: 72, status: 'PASSED' },
-    { id: 'BOT-105', label: 'PET CLEAR', conf: 0.994, x: 54, y: 46, w: 135, h: 80, status: 'PASSED' },
+    { id: 'BOT-104', label: 'PP CAP / PVC', conf: 0.989, x: 14, y: 24, w: 130, h: 72, status: 'REJECT BUNKER' },
+    { id: 'BOT-105', label: 'PET CLEAR TGT', conf: 0.994, x: 54, y: 46, w: 135, h: 80, status: 'PASS TO CRUSHER' },
   ]);
 
   useEffect(() => {
@@ -34,11 +35,11 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const stepIcons = [Cpu, Recycle, Droplets, Flame, Scale];
+  const stepIcons = [Cpu, Users, Flame, Droplets, Wind, Scale];
 
   return (
     <div className="bg-eco-dark text-zinc-100 bg-blueprint-grid">
-      
+
       {/* TOP TELEMETRY MARQUEE */}
       <div className="border-b border-zinc-800/80 bg-zinc-950/90 py-2 overflow-hidden text-[11px] font-medium tracking-wider text-zinc-400">
         <div className="animate-marquee flex gap-12 items-center">
@@ -96,15 +97,15 @@ const Home = () => {
               {/* 3 Key Highlights */}
               <div className="grid grid-cols-3 gap-4 pt-6">
                 <div>
-                  <span className="text-xl sm:text-2xl font-bold text-eco-blue">&gt;98.5%</span>
+                  <span className="text-xl sm:text-2xl font-bold text-eco-blue">{t.hero.stat1Val}</span>
                   <span className="block text-[10px] font-semibold tracking-wider text-zinc-500 mt-0.5">{t.hero.stat1Label}</span>
                 </div>
                 <div>
-                  <span className="text-xl sm:text-2xl font-bold text-white">1% – 2%</span>
+                  <span className="text-xl sm:text-2xl font-bold text-white">{t.hero.stat2Val}</span>
                   <span className="block text-[10px] font-semibold tracking-wider text-zinc-500 mt-0.5">{t.hero.stat2Label}</span>
                 </div>
                 <div>
-                  <span className="text-xl sm:text-2xl font-bold text-emerald-400">100% ZLD</span>
+                  <span className="text-xl sm:text-2xl font-bold text-emerald-400">{t.hero.stat3Val}</span>
                   <span className="block text-[10px] font-semibold tracking-wider text-zinc-500 mt-0.5">{t.hero.stat3Label}</span>
                 </div>
               </div>
@@ -117,7 +118,7 @@ const Home = () => {
               <span className="flex items-center gap-2 text-eco-blue">
                 <Terminal className="w-3.5 h-3.5" /> {t.hero.hudTitle}
               </span>
-              <span className="text-[11px] text-emerald-400">● AUTO SORTING</span>
+              <span className="text-[11px] text-emerald-400">● AI PRIMARY SORT</span>
             </div>
 
             <div className="relative my-6 h-72 border border-zinc-800 bg-[#050507] overflow-hidden">
@@ -134,15 +135,15 @@ const Home = () => {
                   animate={{ left: `${det.x}%`, top: `${det.y}%` }}
                   transition={{ type: 'spring', stiffness: 70, damping: 15 }}
                   style={{ width: det.w, height: det.h }}
-                  className="absolute border border-eco-blue bg-eco-blue/10 p-1.5 flex flex-col justify-between"
+                  className={`absolute border p-1.5 flex flex-col justify-between ${det.status.includes('REJECT') ? 'border-red-500/50 bg-red-500/10' : 'border-eco-blue bg-eco-blue/10'}`}
                 >
-                  <div className="flex justify-between items-center bg-eco-blue text-zinc-950 px-1 py-0.5 text-[9px] font-mono font-bold">
+                  <div className={`flex justify-between items-center px-1 py-0.5 text-[9px] font-mono font-bold text-zinc-950 ${det.status.includes('REJECT') ? 'bg-red-400' : 'bg-eco-blue'}`}>
                     <span>{det.label}</span>
                     <span>{(det.conf * 100).toFixed(1)}%</span>
                   </div>
-                  <div className="text-[9px] font-mono text-eco-blue flex justify-between">
+                  <div className={`text-[9px] font-mono flex justify-between ${det.status.includes('REJECT') ? 'text-red-400' : 'text-eco-blue'}`}>
                     <span>{det.id}</span>
-                    <span>{det.status}</span>
+                    <span className="font-bold">{det.status}</span>
                   </div>
                 </motion.div>
               ))}
@@ -154,16 +155,16 @@ const Home = () => {
 
             <div className="grid grid-cols-3 gap-2 text-xs border-t border-zinc-800 pt-4">
               <div>
-                <span className="text-zinc-500 block text-[10px] uppercase">Wash Temp</span>
-                <span className="text-white font-bold">85.0 °C (NaOH)</span>
+                <span className="text-zinc-500 block text-[10px] uppercase">Yield Hash</span>
+                <span className="text-white font-bold">NODE A &rarr; C</span>
               </div>
               <div>
-                <span className="text-zinc-500 block text-[10px] uppercase">Moisture Out</span>
-                <span className="text-eco-blue font-bold">1.35 %</span>
+                <span className="text-zinc-500 block text-[10px] uppercase">Crusher Status</span>
+                <span className="text-eco-blue font-bold">WET / FLUSHING</span>
               </div>
               <div>
-                <span className="text-zinc-500 block text-[10px] uppercase">Filter Mesh</span>
-                <span className="text-white font-bold">150 µm</span>
+                <span className="text-zinc-500 block text-[10px] uppercase">Wash &amp; Dry</span>
+                <span className="text-white font-bold">pH NEUTRAL</span>
               </div>
             </div>
           </div>
@@ -212,7 +213,45 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. 5-STAGE PROCESS */}
+      {/* 2.5 MATERIAL SOURCING */}
+      <section id="sourcing" className="max-w-7xl mx-auto border-x border-b border-zinc-800/80 bg-zinc-950/40">
+        <div className="p-8 sm:px-12 border-b border-zinc-800/80 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">{t.sourcing.tag}</span>
+            <h2 className="text-2xl sm:text-4xl font-bold mt-2 tracking-tight">{t.sourcing.title}</h2>
+          </div>
+          <p className="text-sm text-zinc-400 max-w-md">{t.sourcing.subtitle}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-zinc-800/80">
+          {t.sourcing.tiers.map((tier, idx) => (
+            <div key={idx} className="p-8 sm:p-10 hover:bg-zinc-900/30 transition-colors flex flex-col justify-between">
+              <div>
+                <span className={`text-xs font-bold px-3 py-1.5 inline-block mb-6 border ${
+                  idx === 0 ? 'bg-emerald-950/50 border-emerald-500/30 text-emerald-400' :
+                  idx === 1 ? 'bg-eco-blue/10 border-eco-blue/30 text-eco-blue' :
+                  'bg-zinc-900 border-zinc-700 text-zinc-400'
+                }`}>
+                  {tier.grade}
+                </span>
+                <h3 className="text-xl font-bold mb-3 text-white">{tier.name}</h3>
+                <p className="text-sm text-zinc-400 leading-relaxed mb-6">{tier.desc}</p>
+              </div>
+              <div className="border-t border-zinc-800 pt-4 mt-auto">
+                <span className={`text-xs font-bold uppercase tracking-wider ${
+                  idx === 0 ? 'text-emerald-400' :
+                  idx === 1 ? 'text-white' :
+                  'text-red-400'
+                }`}>
+                  {tier.price}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. 6-STAGE PROCESS */}
       <section id="process" className="max-w-7xl mx-auto border-x border-b border-zinc-800/80">
         <div className="p-8 sm:px-12 border-b border-zinc-800/80 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -281,7 +320,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. rPELLETS SPEC */}
+      {/* 5. POLYMER CATALOG */}
       <section id="products" className="max-w-7xl mx-auto border-x border-b border-zinc-800/80">
         <div className="p-8 sm:px-12 border-b border-zinc-800/80 flex flex-col md:flex-row justify-between md:items-end gap-4">
           <div>
@@ -293,33 +332,81 @@ const Home = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          {[t.products.hdpe, t.products.pet].map((prod, idx) => (
-            <div key={idx} className={`p-8 sm:p-12 ${idx === 0 ? 'border-b lg:border-b-0 lg:border-r border-zinc-800/80' : ''}`}>
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <span className="text-xs font-semibold text-eco-blue">{prod.sku}</span>
-                  <h3 className="text-2xl font-bold mt-1">{prod.name}</h3>
-                </div>
-                <span className="px-2.5 py-1 text-[11px] font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300">
-                  {prod.grade}
-                </span>
-              </div>
-              <p className="text-sm text-zinc-400 mb-8 leading-relaxed">{prod.desc}</p>
-              <div className="border-t border-zinc-800 text-xs divide-y divide-zinc-800/80">
-                {prod.specs.map(([k, v], sIdx) => (
-                  <div key={sIdx} className="py-3 flex justify-between gap-4">
-                    <span className="text-zinc-500 font-medium">{k}</span>
-                    <span className={sIdx === 2 ? "text-eco-blue font-bold text-right" : "text-zinc-200 font-semibold text-right"}>{v}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+          {/* Scrollable Sidebar Kategori (6 Jenis Utama) */}
+          <div className="lg:col-span-3 border-b lg:border-b-0 lg:border-r border-zinc-800/80 bg-zinc-950/40 p-6 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto lg:max-h-[600px] scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+            {t.products.categories.map((category, idx) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategoryIndex(idx)}
+                className={`text-left px-5 py-3 text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                  activeCategoryIndex === idx
+                    ? 'bg-eco-blue text-zinc-950'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                }`}
+              >
+                {category.name.split(' ')[0]}
+              </button>
+            ))}
+          </div>
+
+          {/* Konten Spesifikasi Aktif */}
+          <div className="lg:col-span-9 p-8 sm:p-12">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategoryIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3 className="text-2xl sm:text-3xl font-bold mb-3">{t.products.categories[activeCategoryIndex].name}</h3>
+                <p className="text-sm text-zinc-400 mb-10 max-w-3xl leading-relaxed">
+                  {t.products.categories[activeCategoryIndex].desc}
+                </p>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  {/* Bagian Grade/Varian */}
+                  <div>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-4">
+                      {t.products.availableGrades}
+                    </span>
+                    <div className="flex flex-wrap gap-2.5">
+                      {t.products.categories[activeCategoryIndex].grades.map((grade, gIdx) => (
+                        <span key={gIdx} className="px-3.5 py-1.5 bg-zinc-900 border border-zinc-700 text-xs font-semibold text-zinc-300">
+                          {grade}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
+
+                  {/* Bagian Spesifikasi Teknis */}
+                  <div>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-4">
+                      {t.products.techSpecs}
+                    </span>
+                    <div className="border border-zinc-800 bg-eco-surface divide-y divide-zinc-800/80">
+                      {t.products.categories[activeCategoryIndex].specs.map(([k, v], sIdx) => (
+                        <div key={sIdx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
+                          <span className="text-[10px] font-semibold text-zinc-400 uppercase">{k}</span>
+                          <span className="text-xs font-bold text-white text-left sm:text-right">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Technical Disclaimer & Machine Trial Note */}
+                <div className="mt-8 p-4 border border-zinc-800 bg-zinc-950/60 text-xs text-zinc-400 leading-relaxed">
+                  {t.products.qcDisclaimer}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </section>
 
-      {/* 6. ZERO WASTE & ZLD */}
+      {/* 6. WASTE & WATER LOOP */}
       <section id="zero-waste" className="max-w-7xl mx-auto border-x border-b border-zinc-800/80">
         <div className="p-8 sm:px-12 border-b border-zinc-800/80">
           <span className="text-xs font-bold text-eco-blue uppercase tracking-widest">{t.zeroWaste.tag}</span>
@@ -340,7 +427,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 7. WEB3 ROADMAP */}
+      {/* 7. WEB3 ROADMAP & CONTACT */}
       <section id="web3" className="max-w-7xl mx-auto border-x border-b border-zinc-800/80 bg-zinc-950/60">
         <div className="p-8 sm:p-12 lg:p-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30">
@@ -374,7 +461,7 @@ const Home = () => {
 
               <div className="space-y-3 text-xs">
                 <a
-                  href="mailto:partnership@ecoidn.com?subject=B2B%20rPellet%20Inquiry%20%26%20Web3%20Updates"
+                  href="mailto:partnership@ecoidn.com?subject=Inquiry%20Ketersediaan%20Material%20%26%20Sampel%20Uji%20Mesin"
                   className="w-full flex items-center justify-between px-5 py-3.5 bg-eco-blue text-zinc-950 font-bold hover:bg-white transition-colors"
                 >
                   <span className="flex items-center gap-2.5">
@@ -383,7 +470,15 @@ const Home = () => {
                   <span>&rarr;</span>
                 </a>
 
-                <div className="pt-4 border-t border-zinc-800 text-zinc-400 space-y-2">
+                <div className="bg-zinc-900 border border-zinc-800 p-4 mt-3 flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-eco-blue shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-zinc-500 font-semibold mb-1">{t.web3.addressLabel}</span>
+                    <span className="text-white leading-relaxed">{t.web3.addressValue}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-zinc-800 text-zinc-400 space-y-2 mt-4">
                   <div className="flex items-center justify-between py-1.5">
                     <span className="flex items-center gap-2"><Share2 className="w-3.5 h-3.5 text-eco-blue" /> Official Email:</span>
                     <span className="text-white font-medium">partnership@ecoidn.com</span>
@@ -400,7 +495,6 @@ const Home = () => {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
